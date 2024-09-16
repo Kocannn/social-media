@@ -1,0 +1,103 @@
+// Define the provider and datasource
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql" // Kamu bisa ganti dengan MySQL atau SQLite sesuai kebutuhan
+  url      = env("DATABASE_URL")
+}
+
+// Define the User model
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String?
+  username  String    @unique
+  email     String    @unique
+  password  String
+  googleId  String?   // nullable field untuk Google login
+  bio       String?
+  profileImageUrl String?
+  posts     Post[]    // hubungan dengan Post model
+  comments  Comment[] // hubungan dengan Comment model
+  messagesSent    Message[] @relation("MessagesSent")
+  messagesReceived Message[] @relation("MessagesReceived")
+  followers Follow[] @relation("UserFollowers")
+  following Follow[] @relation("UserFollowing")
+  likes     Like[]    // Relasi dengan Like model
+  notifications Notification[] // Relasi dengan Notification model
+  createdAt DateTime @default(now())
+  @@map("users")
+}
+
+// Define the Post model
+model Post {
+  id        Int       @id @default(autoincrement())
+  content   String
+  imageUrl  String?   // nullable jika tidak ada gambar
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  comments  Comment[] // hubungan dengan Comment model
+  likes     Like[]    // hubungan dengan Like model
+  createdAt DateTime  @default(now())
+  @@map("posts")
+}
+
+// Define the Comment model with self-referencing field for nested comments
+model Comment {
+  id          Int       @id @default(autoincrement())
+  content     String
+  postId      Int       // relasi dengan Post
+  post        Post      @relation(fields: [postId], references: [id])
+  userId      Int       // relasi dengan User
+  user        User      @relation(fields: [userId], references: [id])
+  parentCommentId Int?  // Self-referencing untuk nested comment
+  parentComment   Comment? @relation("CommentToParent", fields: [parentCommentId], references: [id])
+  replies        Comment[] @relation("CommentToParent")
+  createdAt   DateTime  @default(now())
+  @@map("comments")
+}
+
+// Define the Like model
+model Like {
+  id     Int    @id @default(autoincrement())
+  postId Int
+  post   Post   @relation(fields: [postId], references: [id])
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+  @@map("likes")
+}
+
+// Define the Direct Messaging (DM) model
+model Message {
+  id          Int      @id @default(autoincrement())
+  content     String
+  senderId    Int
+  receiverId  Int
+  sender      User     @relation("MessagesSent", fields: [senderId], references: [id])
+  receiver    User     @relation("MessagesReceived", fields: [receiverId], references: [id])
+  sentAt      DateTime @default(now())
+  @@map("messages")
+}
+
+// Define the Follow model to represent follower-following relationships
+model Follow {
+  id        Int      @id @default(autoincrement())
+  followerId Int
+  followingId Int
+  follower   User    @relation("UserFollowers", fields: [followerId], references: [id])
+  following  User    @relation("UserFollowing", fields: [followingId], references: [id])
+  followedAt DateTime @default(now())
+  @@map("follows")
+}
+
+// Define the Notification model
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int      // user yang akan menerima notifikasi
+  user      User     @relation(fields: [userId], references: [id])
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  @@map("notifications")
+}

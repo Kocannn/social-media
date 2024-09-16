@@ -2,7 +2,7 @@ import { FaSearch } from "react-icons/fa";
 
 const Search = () => {
   return (
-    <div>
+    <div className="sticky top-0 z-0 bg-[#0a0a0a]">
      <div className="relative flex items-center justify-center">
       <input
         type="text"

@@ -3,7 +3,7 @@ import { FaHome, FaSearch, FaBell, FaEnvelope, FaUsers, FaUserAlt, FaEllipsisH }
 
 const Sidebar = () => {
   return (
-    <div className="h-full w-full bg-transparent border-r border-gray-700 text-white flex flex-col justify-between p-4">
+    <div className="h-full w-[276px] bg-transparent fixed text-white flex flex-col justify-between p-4">
       <div>
         <div className="mb-8">
           <span className="text-2xl font-bold">X</span>
