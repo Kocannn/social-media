@@ -1,7 +1,13 @@
 import React from 'react';
 import { FaHome, FaSearch, FaBell, FaEnvelope, FaUsers, FaUserAlt, FaEllipsisH } from 'react-icons/fa';
+import { authUserSession } from '@/libs/auth-libs';
+import { redirect } from 'next/navigation';
 
-const Sidebar = () => {
+const Sidebar = async() => {
+  const user = await authUserSession()
+  if(user === null){
+    redirect('/')
+  }
   return (
     <div className="h-full w-[276px] bg-transparent fixed text-white flex flex-col justify-between p-4">
       <div>
@@ -53,8 +59,8 @@ const Sidebar = () => {
             className="rounded-full w-10 h-10"
           />
           <div>
-            <h4 className="font-bold">urbluesky_</h4>
-            <p className="text-sm text-gray-400">@urbluesky__</p>
+            <h4 className="font-bold">{user.name}</h4>
+            <p className="text-sm text-gray-400">@{user.username}</p>
           </div>
           <FaEllipsisH size={20} />
         </div>

@@ -27,7 +27,6 @@ yarn-error.log*
 
 # local env files
 .env*.local
-.env
 
 # vercel
 .vercel
@@ -35,3 +34,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Build output
+dist/
+build/
+
+# System files
+.DS_Store
+# Git Ignore
+.gitignore

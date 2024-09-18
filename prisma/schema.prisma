@@ -8,16 +8,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@map("sessions")
+}
+ 
+
+
+
 // Define the User model
 model User {
-  id        Int       @id @default(autoincrement())
+  id        String       @id @default(cuid())
   name      String?
-  username  String    @unique
+  image     String?
+  username  String?    @unique
   email     String    @unique
-  password  String
-  googleId  String?   // nullable field untuk Google login
+  emailVerified DateTime? @map("email_verified")
+  password  String?
+  providerAccountId  String?   // nullable field untuk Google login
   bio       String?
   profileImageUrl String?
+  accounts      Account[]
+  sessions      Session[]
   posts     Post[]    // hubungan dengan Post model
   comments  Comment[] // hubungan dengan Comment model
   messagesSent    Message[] @relation("MessagesSent")
@@ -35,7 +72,7 @@ model Post {
   id        Int       @id @default(autoincrement())
   content   String
   imageUrl  String?   // nullable jika tidak ada gambar
-  userId    Int
+  userId    String
   user      User      @relation(fields: [userId], references: [id])
   comments  Comment[] // hubungan dengan Comment model
   likes     Like[]    // hubungan dengan Like model
@@ -49,7 +86,7 @@ model Comment {
   content     String
   postId      Int       // relasi dengan Post
   post        Post      @relation(fields: [postId], references: [id])
-  userId      Int       // relasi dengan User
+  userId      String       // relasi dengan User
   user        User      @relation(fields: [userId], references: [id])
   parentCommentId Int?  // Self-referencing untuk nested comment
   parentComment   Comment? @relation("CommentToParent", fields: [parentCommentId], references: [id])
@@ -63,7 +100,7 @@ model Like {
   id     Int    @id @default(autoincrement())
   postId Int
   post   Post   @relation(fields: [postId], references: [id])
-  userId Int
+  userId String
   user   User   @relation(fields: [userId], references: [id])
   @@map("likes")
 }
@@ -72,8 +109,8 @@ model Like {
 model Message {
   id          Int      @id @default(autoincrement())
   content     String
-  senderId    Int
-  receiverId  Int
+  senderId    String
+  receiverId  String
   sender      User     @relation("MessagesSent", fields: [senderId], references: [id])
   receiver    User     @relation("MessagesReceived", fields: [receiverId], references: [id])
   sentAt      DateTime @default(now())
@@ -83,8 +120,8 @@ model Message {
 // Define the Follow model to represent follower-following relationships
 model Follow {
   id        Int      @id @default(autoincrement())
-  followerId Int
-  followingId Int
+  followerId String
+  followingId String
   follower   User    @relation("UserFollowers", fields: [followerId], references: [id])
   following  User    @relation("UserFollowing", fields: [followingId], references: [id])
   followedAt DateTime @default(now())
@@ -94,7 +131,7 @@ model Follow {
 // Define the Notification model
 model Notification {
   id        Int      @id @default(autoincrement())
-  userId    Int      // user yang akan menerima notifikasi
+  userId    String      // user yang akan menerima notifikasi
   user      User     @relation(fields: [userId], references: [id])
   content   String
   isRead    Boolean  @default(false)

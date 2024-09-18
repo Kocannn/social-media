@@ -33,12 +33,6 @@ export default function Page() {
     });
   };
 
-  const handlerSignInWithGithub = (e) => {
-    e.preventDefault();
-    signIn("github", {
-      callbackUrl: "/home",
-    });
-  };
 
   return (
     <>
@@ -137,7 +131,7 @@ export default function Page() {
                 </button>
               </div>
               <div>
-                <button className="w-full gap-2 text-center py-2 my-3 border flex items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150">
+                <button onClick={handlerSignInWithGoogle} className="w-full gap-2 text-center py-2 my-3 border flex items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150">
                   <Image
                     src={"https://www.svgrepo.com/show/355037/google.svg"}
                     width={20}
