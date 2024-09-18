@@ -1,9 +1,13 @@
 import prisma from "@/libs/prisma";
 import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
 const Page = async () => {
   const getData = await prisma.post.findMany({
     include: {
       user: true,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 
@@ -12,11 +16,7 @@ const Page = async () => {
       <div className="flex p-4 border-b border-gray-700 text-white">
         {/* Profile Image */}
         <div className="mr-4">
-          <img
-            src="https://via.placeholder.com/40"
-            alt="Profile"
-            className="rounded-full"
-          />
+          <Image src={item.user.image} width={40} height={40} className="rounded-full" alt="profile" />
         </div>
 
         {/* Tweet Content */}
