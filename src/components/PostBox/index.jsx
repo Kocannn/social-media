@@ -17,14 +17,10 @@ const Page = ({ user }) => {
         'Content-Type': 'application/json',
       },
     })
-    if(response.status == 200){
-      console.log("cihuyyyy");
-    }
     setStatus('')
     router.refresh()
   }
 
-  console.log(user);
   return (
     <div className=" text-white p-6 border-gray-700 w-full border-b">
       <form>

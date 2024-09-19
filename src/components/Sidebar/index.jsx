@@ -14,7 +14,7 @@ import Image from "next/image";
 
 const Sidebar = async () => {
   const user = await authUserSession();
-  if (user === null) {
+  if (!user) {
     redirect("/");
   }
   return (
